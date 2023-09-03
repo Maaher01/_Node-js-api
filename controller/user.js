@@ -20,7 +20,6 @@ exports.userRegistration = async (req, res, next) => {
 
 	// Main..
 	const bodyData = req.body;
-	console.log(bodyData);
 
 	const password = bodyData.password;
 	const hashedPass = bcrypt.hashSync(password, 6);
