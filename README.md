@@ -1,1 +1,1 @@
-# _Node-js-api
+# node-js-ecommerce-api-boilerplate
