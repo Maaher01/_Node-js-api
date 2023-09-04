@@ -26,7 +26,9 @@ app.use("/api/product", productRoutes);
  */
 app.get("/", (req, res) => {
 	res.send(
-		'<div style="width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center"><h1 style="color: blueviolet">API RUNNING...</h1></div>'
+		`<div style="width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center">
+			<h1 style="color: blueviolet">API RUNNING...</h1>
+		</div>`
 	);
 });
 
@@ -39,10 +41,10 @@ mongoose
 	.then(() => {
 		const port = process.env.PORT || 3000;
 		app.listen(port, () =>
-			console.log(`Server is running at http://localhost:${port} `)
+			console.log(`Server is running at http://localhost:${port}`)
 		);
-		console.log("Connected to mongoDB");
+		console.log("Connected to MongoDB");
 	})
 	.catch((err) => {
-		console.error("Oops! Could not connect to mongoDB Cluster0", err);
+		console.error("Oops! Could not connect to MongoDB Cluster", err);
 	});
