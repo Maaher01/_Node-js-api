@@ -209,19 +209,33 @@ exports.updateMultipleProductById = async (req, res, next) => {
 exports.deleteProductById = async (req, res, next) => {
 	const productId = req.params.id;
 
-	try {
-		const query = { _id: productId };
-		await Product.deleteOne(query);
-		await Review.deleteOne({ product: productId });
+	let filter;
 
-		res.status(200).json({
-			message: "Product deleted successfully!",
-		});
-	} catch (err) {
-		if (!err.statusCode) {
-			err.statusCode = 500;
-			err.message = "Something went wrong in the database operation!";
+	filter = { id: productId };
+
+	//Find the product
+	Product.findOne(filter).then((product) => {
+		if (!product) {
+			const error = new Error("Product could not be found!");
+			error.statusCode = 401;
+			next(error);
+			return;
 		}
-		next(err);
-	}
+
+		try {
+			const query = { _id: productId };
+			Product.deleteOne(query);
+			// Review.deleteOne({ product: productId });
+
+			res.status(200).json({
+				message: "Product deleted successfully!",
+			});
+		} catch (err) {
+			if (!err.statusCode) {
+				err.statusCode = 500;
+				err.message = "Something went wrong in the database operation!";
+			}
+			next(err);
+		}
+	});
 };

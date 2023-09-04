@@ -246,18 +246,32 @@ exports.forgotAdminPassword = async (req, res, next) => {
 exports.deleteAdminById = async (req, res, next) => {
 	const itemId = req.params.id;
 
-	try {
-		const query = { _id: itemId };
-		await Admin.deleteOne(query);
+	let filter;
 
-		res.status(200).json({
-			message: "Data deleted successfully!",
-		});
-	} catch (err) {
-		if (!err.statusCode) {
-			err.statusCode = 500;
-			err.message = "Something went wrong in the database operation!";
+	filter = { id: itemId };
+
+	//Find the admin
+	Admin.findOne(filter).then((admin) => {
+		if (!admin) {
+			const error = new Error("Admin could not be found!");
+			error.statusCode = 401;
+			next(error);
+			return;
 		}
-		next(err);
-	}
+
+		try {
+			const query = { _id: itemId };
+			Admin.deleteOne(query);
+
+			res.status(200).json({
+				message: "Data deleted successfully!",
+			});
+		} catch (err) {
+			if (!err.statusCode) {
+				err.statusCode = 500;
+				err.message = "Something went wrong in the database operation!";
+			}
+			next(err);
+		}
+	});
 };

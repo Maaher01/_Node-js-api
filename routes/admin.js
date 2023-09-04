@@ -23,11 +23,11 @@ router.get(
 	checkAdminAuth,
 	controller.getLoginAdminInfo
 );
-router.get("/get-all-admin-list", controller.getAdminLists);
+router.get("/get-all-admin-list", checkAdminAuth, controller.getAdminLists);
 router.get("/get-single-admin-by-id/:id", controller.getSingleAdminById);
 router.delete(
 	"/delete-admin-by-id/:id",
-	// checkAdminAuth,
+	checkAdminAuth,
 	controller.deleteAdminById
 );
 router.post("/edit-admin-data", checkAdminAuth, controller.editAdmin);

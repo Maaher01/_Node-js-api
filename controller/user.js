@@ -145,20 +145,34 @@ exports.forgotUserPassword = async (req, res, next) => {
 exports.deleteUserById = async (req, res, next) => {
 	const itemId = req.params.id;
 
-	try {
-		const query = { _id: itemId };
-		await User.deleteOne(query);
+	let filter;
 
-		res.status(200).json({
-			message: "Data deleted successfully!",
-		});
-	} catch (err) {
-		if (!err.statusCode) {
-			err.statusCode = 500;
-			err.message = "Something went wrong in the database operation!";
+	filter = { id: itemId };
+
+	//Find the user
+	User.findOne(filter).then((user) => {
+		if (!user) {
+			const error = new Error("User could not be found!");
+			error.statusCode = 401;
+			next(error);
+			return;
 		}
-		next(err);
-	}
+
+		try {
+			const query = { _id: itemId };
+			User.deleteOne(query);
+
+			res.status(200).json({
+				message: "Data deleted successfully!",
+			});
+		} catch (err) {
+			if (!err.statusCode) {
+				err.statusCode = 500;
+				err.message = "Something went wrong in the database operation!";
+			}
+			next(err);
+		}
+	});
 };
 
 exports.getLoginUserInfo = async (req, res, next) => {

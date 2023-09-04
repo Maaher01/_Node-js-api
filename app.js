@@ -4,6 +4,7 @@ require("dotenv").config();
 
 const cors = require("cors");
 const errorHandler = require("./middileware/error-handler");
+const corsOptions = require("./middileware/check-ip-whitelist");
 
 // Router File Import
 const adminRoutes = require("./routes/admin");
