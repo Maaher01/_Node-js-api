@@ -18,6 +18,7 @@ router.post(
 );
 router.put("/login", controller.userLogin);
 router.patch("/forgot-password", controller.forgotUserPassword);
+router.delete("/delete-user-by-id/:id", controller.deleteUserById);
 router.get("/logged-in-user-data", checkAuth, controller.getLoginUserInfo);
 router.get("/get-all-user-list", controller.getUserLists);
 

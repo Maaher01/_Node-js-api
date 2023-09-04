@@ -142,6 +142,25 @@ exports.forgotUserPassword = async (req, res, next) => {
 	});
 };
 
+exports.deleteUserById = async (req, res, next) => {
+	const itemId = req.params.id;
+
+	try {
+		const query = { _id: itemId };
+		await User.deleteOne(query);
+
+		res.status(200).json({
+			message: "Data deleted successfully!",
+		});
+	} catch (err) {
+		if (!err.statusCode) {
+			err.statusCode = 500;
+			err.message = "Something went wrong in the database operation!";
+		}
+		next(err);
+	}
+};
+
 exports.getLoginUserInfo = async (req, res, next) => {
 	try {
 		const loginUserId = req.userData.userId;
