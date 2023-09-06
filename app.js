@@ -1,10 +1,10 @@
 const express = require("express");
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 require("dotenv").config();
+const databaseConnection = require("./config/config");
 
 const cors = require("cors");
 const errorHandler = require("./middleware/error-handler");
-const corsOptions = require("./middleware/check-ip-whitelist");
 
 // Router File Import
 const adminRoutes = require("./routes/admin");
@@ -13,6 +13,10 @@ const productRoutes = require("./routes/product");
 
 // MAIN APP CONFIG
 const app = express();
+
+const port = process.env.PORT || 3000;
+
+//Middlewares
 app.use(express.json());
 app.use(cors());
 
@@ -35,16 +39,7 @@ app.get("/", (req, res) => {
 app.use(errorHandler.route);
 app.use(errorHandler.next);
 
-// MongoDB Connection
-mongoose
-	.connect("mongodb://127.0.0.1:27017/test")
-	.then(() => {
-		const port = process.env.PORT || 3000;
-		app.listen(port, () =>
-			console.log(`Server is running at http://localhost:${port}`)
-		);
-		console.log("Connected to MongoDB");
-	})
-	.catch((err) => {
-		console.error("Oops! Could not connect to MongoDB Cluster", err);
-	});
+app.listen(port, async () => {
+	await databaseConnection();
+	console.log(`Server is running at http://localhost:${port}`);
+});
