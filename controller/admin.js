@@ -243,35 +243,69 @@ exports.forgotAdminPassword = async (req, res, next) => {
 	});
 };
 
+exports.updateAdminById = async (req, res, next) => {
+	const data = req.body;
+	const params = req.params;
+
+	// let filter;
+
+	// filter = { id: params.id };
+
+	// //Find the product
+	// User.findOne(filter).then((user) => {
+	// 	if (!user) {
+	// 		const error = new Error("User could not be found!");
+	// 		error.statusCode = 401;
+	// 		next(error);
+	// 		return;
+	// 	}
+
+	try {
+		await Admin.findOneAndUpdate({ _id: params.id }, { $set: data });
+
+		res.status(200).json({
+			message: "Admin updated successfully!",
+		});
+	} catch (err) {
+		console.log(err);
+		if (!err.statusCode) {
+			err.statusCode = 500;
+			err.message = "Something went wrong in the database operation!";
+		}
+		next(err);
+	}
+	// });
+};
+
 exports.deleteAdminById = async (req, res, next) => {
 	const itemId = req.params.id;
 
-	let filter;
+	// let filter;
 
-	filter = { id: itemId };
+	// filter = { id: itemId };
 
-	//Find the admin
-	Admin.findOne(filter).then((admin) => {
-		if (!admin) {
-			const error = new Error("Admin could not be found!");
-			error.statusCode = 401;
-			next(error);
-			return;
+	// // Find the admin
+	// Admin.findOne(filter).then((admin) => {
+	// 	if (!admin) {
+	// 		const error = new Error("Admin could not be found!");
+	// 		error.statusCode = 401;
+	// 		next(error);
+	// 		return;
+	// 	}
+
+	try {
+		const query = { _id: itemId };
+		await Admin.deleteOne(query);
+
+		res.status(200).json({
+			message: "Data deleted successfully!",
+		});
+	} catch (err) {
+		if (!err.statusCode) {
+			err.statusCode = 500;
+			err.message = "Something went wrong in the database operation!";
 		}
-
-		try {
-			const query = { _id: itemId };
-			Admin.deleteOne(query);
-
-			res.status(200).json({
-				message: "Data deleted successfully!",
-			});
-		} catch (err) {
-			if (!err.statusCode) {
-				err.statusCode = 500;
-				err.message = "Something went wrong in the database operation!";
-			}
-			next(err);
-		}
-	});
+		next(err);
+	}
+	// });
 };

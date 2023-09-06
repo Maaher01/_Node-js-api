@@ -4,6 +4,8 @@ const express = require("express");
 const controller = require("../controller/user");
 const inputValidator = require("../validation/user");
 const checkAuth = require("../middileware/check-user-auth");
+const checkAdminAuth = require("../middileware/check-admin-auth");
+const checkIpWhitelist = require("../middileware/check-ip-whitelist");
 
 const router = express.Router();
 
@@ -11,6 +13,7 @@ const router = express.Router();
  * /api/user
  * http://localhost:3000/api/user
  */
+
 router.post(
 	"/registration",
 	inputValidator.checkUserRegInput,
@@ -19,6 +22,12 @@ router.post(
 router.put("/login", controller.userLogin);
 router.patch("/forgot-password", controller.forgotUserPassword);
 router.delete("/delete-user-by-id/:id", controller.deleteUserById);
+router.put(
+	"/edit-user-by-id/:id",
+	checkIpWhitelist,
+	checkAdminAuth,
+	controller.updateUserById
+);
 router.get("/logged-in-user-data", checkAuth, controller.getLoginUserInfo);
 router.get("/get-all-user-list", controller.getUserLists);
 

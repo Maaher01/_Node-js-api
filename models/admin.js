@@ -22,6 +22,10 @@ const adminSchema = new Schema({
 		type: String,
 		required: true,
 	},
+	profileImg: {
+		type: String,
+		required: false,
+	},
 	role: {
 		type: String,
 		required: true,

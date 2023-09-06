@@ -166,8 +166,23 @@ exports.getSingleProductById = async (req, res, next) => {
 
 exports.updateProductById = async (req, res, next) => {
 	const data = req.body;
+	const params = req.params;
+
+	// let filter;
+
+	// filter = { id: params.id };
+
+	// //Find the product
+	// Product.findOne(filter).then((product) => {
+	// 	if (!product) {
+	// 		const error = new Error("Product could not be found!");
+	// 		error.statusCode = 401;
+	// 		next(error);
+	// 		return;
+	// 	}
+
 	try {
-		await Product.findOneAndUpdate({ _id: data._id }, { $set: data });
+		await Product.findOneAndUpdate({ _id: params.id }, { $set: data });
 
 		res.status(200).json({
 			message: "Product updated successfully!",
@@ -180,6 +195,7 @@ exports.updateProductById = async (req, res, next) => {
 		}
 		next(err);
 	}
+	// });
 };
 
 exports.updateMultipleProductById = async (req, res, next) => {
@@ -209,33 +225,33 @@ exports.updateMultipleProductById = async (req, res, next) => {
 exports.deleteProductById = async (req, res, next) => {
 	const productId = req.params.id;
 
-	let filter;
+	// let filter;
 
-	filter = { id: productId };
+	// filter = { id: productId };
 
-	//Find the product
-	Product.findOne(filter).then((product) => {
-		if (!product) {
-			const error = new Error("Product could not be found!");
-			error.statusCode = 401;
-			next(error);
-			return;
+	// //Find the product
+	// Product.findOne(filter).then((product) => {
+	// 	if (!product) {
+	// 		const error = new Error("Product could not be found!");
+	// 		error.statusCode = 401;
+	// 		next(error);
+	// 		return;
+	// 	}
+
+	try {
+		const query = { _id: productId };
+		await Product.deleteOne(query);
+		// Review.deleteOne({ product: productId });
+
+		res.status(200).json({
+			message: "Product deleted successfully!",
+		});
+	} catch (err) {
+		if (!err.statusCode) {
+			err.statusCode = 500;
+			err.message = "Something went wrong in the database operation!";
 		}
-
-		try {
-			const query = { _id: productId };
-			Product.deleteOne(query);
-			// Review.deleteOne({ product: productId });
-
-			res.status(200).json({
-				message: "Product deleted successfully!",
-			});
-		} catch (err) {
-			if (!err.statusCode) {
-				err.statusCode = 500;
-				err.message = "Something went wrong in the database operation!";
-			}
-			next(err);
-		}
-	});
+		next(err);
+	}
+	// });
 };

@@ -150,29 +150,63 @@ exports.deleteUserById = async (req, res, next) => {
 	filter = { id: itemId };
 
 	//Find the user
-	User.findOne(filter).then((user) => {
-		if (!user) {
-			const error = new Error("User could not be found!");
-			error.statusCode = 401;
-			next(error);
-			return;
-		}
+	// User.findOne(filter).then((user) => {
+	// 	if (!user) {
+	// 		const error = new Error("User could not be found!");
+	// 		error.statusCode = 401;
+	// 		next(error);
+	// 		return;
+	// 	}
 
-		try {
-			const query = { _id: itemId };
-			User.deleteOne(query);
+	try {
+		const query = { _id: itemId };
+		await User.deleteOne(query);
 
-			res.status(200).json({
-				message: "Data deleted successfully!",
-			});
-		} catch (err) {
-			if (!err.statusCode) {
-				err.statusCode = 500;
-				err.message = "Something went wrong in the database operation!";
-			}
-			next(err);
+		res.status(200).json({
+			message: "Data deleted successfully!",
+		});
+	} catch (err) {
+		if (!err.statusCode) {
+			err.statusCode = 500;
+			err.message = "Something went wrong in the database operation!";
 		}
-	});
+		next(err);
+	}
+	// });
+};
+
+exports.updateUserById = async (req, res, next) => {
+	const data = req.body;
+	const params = req.params;
+
+	// let filter;
+
+	// filter = { id: params.id };
+
+	// //Find the product
+	// User.findOne(filter).then((user) => {
+	// 	if (!user) {
+	// 		const error = new Error("User could not be found!");
+	// 		error.statusCode = 401;
+	// 		next(error);
+	// 		return;
+	// 	}
+
+	try {
+		await User.findOneAndUpdate({ _id: params.id }, { $set: data });
+
+		res.status(200).json({
+			message: "User updated successfully!",
+		});
+	} catch (err) {
+		console.log(err);
+		if (!err.statusCode) {
+			err.statusCode = 500;
+			err.message = "Something went wrong in the database operation!";
+		}
+		next(err);
+	}
+	// });
 };
 
 exports.getLoginUserInfo = async (req, res, next) => {

@@ -12,10 +12,11 @@ const router = express.Router();
  * /api/product
  * http://localhost:3000/api/product
  */
+
 router.post(
 	"/add-single-product",
 	checkIpWhitelist,
-	// checkAdminAuth,
+	checkAdminAuth,
 	controller.addSingleProduct
 );
 router.post(
@@ -34,11 +35,9 @@ router.get(
 	controller.getSingleProductBySlug
 );
 router.get("/get-single-product-by-id/:id", controller.getSingleProductById);
-// Modify
 router.put(
-	"/edit-product-by-id",
+	"/edit-product-by-id/:id",
 	checkIpWhitelist,
-	checkAdminAuth,
 	checkAdminAuth,
 	controller.updateProductById
 );
@@ -51,7 +50,7 @@ router.post(
 router.delete(
 	"/delete-product-by-id/:id",
 	checkIpWhitelist,
-	// checkAdminAuth,
+	checkAdminAuth,
 	controller.deleteProductById
 );
 
