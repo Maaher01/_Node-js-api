@@ -1,9 +1,9 @@
 const express = require("express");
 
 // Created Require Files..
-const controller = require("../controller/product");
-const checkAdminAuth = require("../middileware/check-admin-auth");
-const checkIpWhitelist = require("../middileware/check-ip-whitelist");
+const controller = require("../controllers/product");
+const checkAdminAuth = require("../middleware/check-admin-auth");
+const checkIpWhitelist = require("../middleware/check-ip-whitelist");
 
 // Get Express Router Function..
 const router = express.Router();

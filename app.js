@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 const cors = require("cors");
-const errorHandler = require("./middileware/error-handler");
-const corsOptions = require("./middileware/check-ip-whitelist");
+const errorHandler = require("./middleware/error-handler");
+const corsOptions = require("./middleware/check-ip-whitelist");
 
 // Router File Import
 const adminRoutes = require("./routes/admin");

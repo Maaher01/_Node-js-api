@@ -1,11 +1,11 @@
 // Main Module Required..
 const express = require("express");
 
-const controller = require("../controller/user");
+const controller = require("../controllers/user");
 const inputValidator = require("../validation/user");
-const checkAuth = require("../middileware/check-user-auth");
-const checkAdminAuth = require("../middileware/check-admin-auth");
-const checkIpWhitelist = require("../middileware/check-ip-whitelist");
+const checkAuth = require("../middleware/check-user-auth");
+const checkAdminAuth = require("../middleware/check-admin-auth");
+const checkIpWhitelist = require("../middleware/check-ip-whitelist");
 
 const router = express.Router();
 
