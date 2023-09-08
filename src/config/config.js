@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 
-// MongoDB Connection
+/**
+ * MongoDB Connection
+ */
 const databaseConnection = async () => {
 	mongoose
 		.connect("mongodb://127.0.0.1:27017/test")

@@ -170,45 +170,6 @@ exports.getAdminLists = async (req, res, next) => {
 	}
 };
 
-exports.getSingleAdminById = async (req, res, next) => {
-	const id = req.params.id;
-	try {
-		const query = { _id: id };
-		const data = await Admin.findOne(query);
-
-		res.status(200).json({
-			data: data,
-			message: "Data fetched successfully!",
-		});
-	} catch (err) {
-		if (!err.statusCode) {
-			err.statusCode = 500;
-			err.message = "Something went wrong in the database operation!";
-		}
-		next(err);
-	}
-};
-
-exports.editAdmin = async (req, res, next) => {
-	const updatedData = req.body;
-
-	try {
-		await Admin.findOneAndUpdate(
-			{ _id: updatedData._id },
-			{ $set: updatedData }
-		);
-		res.status(200).json({
-			message: "Data updated successfully!",
-		});
-	} catch (err) {
-		if (!err.statusCode) {
-			err.statusCode = 500;
-			err.message = "Something went wrong in the database operation!";
-		}
-		next(err);
-	}
-};
-
 exports.forgotAdminPassword = async (req, res, next) => {
 	const { username, newPassword } = req.body;
 

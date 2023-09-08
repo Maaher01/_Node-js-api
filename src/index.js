@@ -1,25 +1,37 @@
+/**
+ * NODEJS API
+ * DATABASE MONGODB
+ */
 const express = require("express");
 require("dotenv").config();
 const databaseConnection = require("./config/config");
 
+// Cors Files..
 const cors = require("cors");
 const errorHandler = require("./middleware/error-handler");
+const corsOptions = require("./middleware/check-ip-whitelist");
 
-// Router File Import
+/**
+ *  Router File Import
+ */
 const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/user");
 const productRoutes = require("./routes/product");
 
-// MAIN APP CONFIG
+/**
+ * MAIN APP CONFIG
+ */
 const app = express();
 
 const port = process.env.PORT || 3000;
 
 //Middlewares
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
-// MAIN BASE ROUTER WITH IMPORTED ROUTES
+/**
+ * MAIN BASE ROUTER WITH IMPORTED ROUTES
+ */
 app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/product", productRoutes);
@@ -35,9 +47,17 @@ app.get("/", (req, res) => {
 	);
 });
 
+/**
+ * Error Handler
+ */
 app.use(errorHandler.route);
 app.use(errorHandler.next);
 
+/**
+ * NODEJS SERVER
+ * PORT CONTROL
+ * MongoDB Connection
+ */
 app.listen(port, async () => {
 	await databaseConnection();
 	console.log(`Server is running at http://localhost:${port}`);

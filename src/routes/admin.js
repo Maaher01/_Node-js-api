@@ -4,7 +4,6 @@ const express = require("express");
 const controller = require("../controllers/admin");
 const inputValidator = require("../validation/admin");
 const checkAdminAuth = require("../middleware/check-admin-auth");
-const checkIpWhitelist = require("../middleware/check-ip-whitelist");
 
 // Get Express Router Function..
 const router = express.Router();
@@ -26,19 +25,12 @@ router.get(
 	controller.getLoginAdminInfo
 );
 router.get("/get-all-admin-list", checkAdminAuth, controller.getAdminLists);
-router.get("/get-single-admin-by-id/:id", controller.getSingleAdminById);
-router.put(
-	"/edit-admin-by-id/:id",
-	checkIpWhitelist,
-	checkAdminAuth,
-	controller.updateAdminById
-);
+router.put("/edit-admin-by-id/:id", checkAdminAuth, controller.updateAdminById);
 router.delete(
 	"/delete-admin-by-id/:id",
 	checkAdminAuth,
 	controller.deleteAdminById
 );
-router.post("/edit-admin-data", checkAdminAuth, controller.editAdmin);
 router.patch("/forgot-password", controller.forgotAdminPassword);
 
 // Export all routes..

@@ -32,27 +32,6 @@ exports.addSingleProduct = async (req, res, next) => {
 	}
 };
 
-exports.insertManyProduct = async (req, res, next) => {
-	try {
-		const data = req.body;
-		await Product.deleteMany({});
-		const result = await Product.insertMany(data);
-
-		res.status(200).json({
-			message: `${
-				result && result.length ? result.length : 0
-			} Products imported successfully!`,
-		});
-	} catch (err) {
-		console.log(err);
-		if (!err.statusCode) {
-			err.statusCode = 500;
-			err.message = "Something went wrong in database operation!";
-		}
-		next(err);
-	}
-};
-
 exports.getAllProducts = async (req, res, next) => {
 	try {
 		const queryData = Product.find();
@@ -124,26 +103,6 @@ exports.getProductsByDynamicSort = async (req, res, next) => {
 	}
 };
 
-exports.getSingleProductBySlug = async (req, res, next) => {
-	const productSlug = req.params.slug;
-
-	try {
-		const query = { productSlug: productSlug };
-		const data = await Product.findOne(query);
-
-		res.status(200).json({
-			data: data,
-			message: "Product fetched Successfully!",
-		});
-	} catch (err) {
-		if (!err.statusCode) {
-			err.statusCode = 500;
-			err.message = "Something went wrong in the database operation!";
-		}
-		next(err);
-	}
-};
-
 exports.getSingleProductById = async (req, res, next) => {
 	const id = req.params.id;
 
@@ -196,30 +155,6 @@ exports.updateProductById = async (req, res, next) => {
 		next(err);
 	}
 	// });
-};
-
-exports.updateMultipleProductById = async (req, res, next) => {
-	const data = req.body;
-	try {
-		data.forEach((m) => {
-			Product.findByIdAndUpdate(
-				m._id,
-				{ $set: m },
-				{ new: true, multi: true }
-			).exec();
-		});
-
-		res.status(200).json({
-			message: "Products updated successfully!",
-		});
-	} catch (err) {
-		console.log(err);
-		if (!err.statusCode) {
-			err.statusCode = 500;
-			err.message = "Something went wrong in the database operation!";
-		}
-		next(err);
-	}
 };
 
 exports.deleteProductById = async (req, res, next) => {
