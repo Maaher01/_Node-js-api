@@ -25,6 +25,7 @@ router.get(
 	controller.getLoginAdminInfo
 );
 router.get("/get-all-admin-list", checkAdminAuth, controller.getAdminLists);
+//Modify
 router.put("/edit-admin-by-id/:id", checkAdminAuth, controller.updateAdminById);
 router.delete(
 	"/delete-admin-by-id/:id",

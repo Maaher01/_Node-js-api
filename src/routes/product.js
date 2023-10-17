@@ -14,11 +14,9 @@ const router = express.Router();
 
 router.post("/add-single-product", checkAdminAuth, controller.addSingleProduct);
 router.post("/get-all-products", controller.getAllProducts);
-router.post(
-	"/get-products-by-dynamic-sort",
-	controller.getProductsByDynamicSort
-);
 router.get("/get-single-product-by-id/:id", controller.getSingleProductById);
+
+// Modify
 router.put(
 	"/edit-product-by-id/:id",
 	checkAdminAuth,
