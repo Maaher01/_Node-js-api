@@ -38,6 +38,19 @@ const productSchema = new Schema(
 			type: String,
 			required: false,
 		},
+		soldQuantity: {
+			type: Number,
+			default: 0,
+			required: false,
+		},
+		warrantyPolicy: {
+			type: String,
+			required: false,
+		},
+		description: {
+			type: String,
+			required: false,
+		},
 	},
 	{
 		timestamps: true,
