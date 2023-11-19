@@ -29,11 +29,6 @@ const productSchema = new Schema(
 			type: Number,
 			required: false,
 		},
-		quantity: {
-			type: Number,
-			default: 1,
-			required: false,
-		},
 		brand: {
 			type: String,
 			required: false,

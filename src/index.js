@@ -17,6 +17,7 @@ const corsOptions = require("./middleware/check-ip-whitelist");
 const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/user");
 const productRoutes = require("./routes/product");
+const cartRoutes = require("./routes/cart");
 
 /**
  * MAIN APP CONFIG
@@ -35,6 +36,7 @@ app.use(cors(corsOptions));
 app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/product", productRoutes);
+app.use("/api/cart", cartRoutes);
 
 /**
  * MAIN BASE GET PATH
