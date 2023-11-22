@@ -212,16 +212,7 @@ exports.updateUserById = async (req, res, next) => {
 exports.getLoginUserInfo = async (req, res, next) => {
 	try {
 		const loginUserId = req.userData.userId;
-		const selectString = req.query.select;
-
-		let user;
-
-		if (selectString) {
-			user = User.findById(loginUserId).select(selectString);
-		} else {
-			user = User.findById(loginUserId).select("-password");
-		}
-		const data = await user;
+		const data = await User.findOne({ _id: loginUserId }).select("-password");
 
 		res.status(200).json({
 			data: data,
@@ -238,7 +229,7 @@ exports.getLoginUserInfo = async (req, res, next) => {
 
 exports.getUserLists = async (req, res, next) => {
 	try {
-		const users = await User.find().select("-password -carts -checkouts");
+		const users = await User.find().select("-password -carts");
 
 		res.status(200).json({
 			data: users,
