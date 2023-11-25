@@ -54,7 +54,7 @@ exports.addToCart = async (req, res, next) => {
 };
 
 exports.getUserCart = async (req, res, next) => {
-	const userId = req.body.userId;
+	const userId = req.query.userId;
 
 	try {
 		const fData = await Cart.find({ userId: userId }).populate(
