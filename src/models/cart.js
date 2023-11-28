@@ -19,8 +19,20 @@ const cartSchema = new Schema(
 					type: Number,
 					default: 1,
 				},
+				totalProductPrice: {
+					type: Number,
+					default: 0
+				}
 			},
 		],
+		totalPrice: {
+			type: Number,
+			default: 0
+		},
+		totalQuantity: {
+			type: Number,
+			default: 0
+		}
 	},
 	{
 		timestamps: true,

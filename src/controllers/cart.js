@@ -6,7 +6,7 @@ exports.addToCart = async (req, res, next) => {
 	const userId = req.body.userId;
 	const productId = req.body.productId;
 
-	const newData = { cartProducts: [{ product: productId }], userId };
+	const newData = { cartProducts: [{ product: productId }], userId, totalQuantity: 1 };
 	try {
 		const cartData = await Cart.findOne({ userId: userId });
 
@@ -22,6 +22,8 @@ exports.addToCart = async (req, res, next) => {
 					product: productId,
 					productQuantity: 1,
 				});
+
+				cartData.totalQuantity += 1
 			}
 
 			await cartData.save();

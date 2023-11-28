@@ -18,7 +18,8 @@ const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/user");
 const productRoutes = require("./routes/product");
 const cartRoutes = require("./routes/cart");
-
+const orderRoutes = require("./routes/order")
+ 
 /**
  * MAIN APP CONFIG
  */
@@ -37,6 +38,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/order", orderRoutes)
 
 /**
  * MAIN BASE GET PATH
@@ -56,8 +58,7 @@ app.use(errorHandler.route);
 app.use(errorHandler.next);
 
 /**
- * NODEJS SERVER
- * PORT CONTROL
+ * NODEJS SERVER START
  * MongoDB Connection
  */
 app.listen(port, async () => {
