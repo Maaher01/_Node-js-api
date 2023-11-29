@@ -12,7 +12,7 @@ const router = express.Router()
  */
 
 router.post("/add-order", controller.addOrder)
-router.get("/get-user-orders", controller.getUserOrder)
+router.get("/get-user-orders", controller.getUserOrders)
 router.get("/get-order-by-id/:id", controller.getOrderById)
 
 module.exports = router
