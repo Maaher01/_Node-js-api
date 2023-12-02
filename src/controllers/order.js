@@ -7,7 +7,7 @@ const ObjectId = require("mongoose").Types.ObjectId;
 exports.addOrder = async (req, res, next) => {
 	const user = req.body.userId;
 	const orderData = req.body;
-
+	
 	const mData = { ...orderData };
 	const newOrder = new Order(mData);
 
@@ -29,7 +29,7 @@ exports.addOrder = async (req, res, next) => {
 
 		res.status(200).json({
 			data: saveOrder,
-			message: "Order successfully placed.",
+			message: "Order placed successfully.",
 		});
 	} catch (err) {
 		console.log(err);
