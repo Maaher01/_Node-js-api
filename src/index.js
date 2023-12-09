@@ -17,9 +17,12 @@ const corsOptions = require("./middleware/check-ip-whitelist");
 const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/user");
 const productRoutes = require("./routes/product");
+const productCategoryRoutes = require("./routes/product-category");
+const productSubCategoryRoutes = require("./routes/product-sub-category");
+const productBrandRoutes = require("./routes/product-brand");
 const cartRoutes = require("./routes/cart");
-const orderRoutes = require("./routes/order")
- 
+const orderRoutes = require("./routes/order");
+
 /**
  * MAIN APP CONFIG
  */
@@ -37,8 +40,11 @@ app.use(cors(corsOptions));
 app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/product", productRoutes);
+app.use("/api/product-category", productCategoryRoutes);
+app.use("/api/product-sub-category", productSubCategoryRoutes);
+app.use("/api/product-brand", productBrandRoutes);
 app.use("/api/cart", cartRoutes);
-app.use("/api/order", orderRoutes)
+app.use("/api/order", orderRoutes);
 
 /**
  * MAIN BASE GET PATH

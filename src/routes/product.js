@@ -13,7 +13,7 @@ const router = express.Router();
  */
 
 router.post("/add-single-product", checkAdminAuth, controller.addSingleProduct);
-router.get("/get-all-products", controller.getAllProducts);
+router.post("/get-all-products", controller.getAllProducts);
 router.get("/get-single-product-by-id/:id", controller.getSingleProductById);
 
 // Modify

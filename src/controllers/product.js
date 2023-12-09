@@ -34,11 +34,33 @@ exports.addSingleProduct = async (req, res, next) => {
 
 exports.getAllProducts = async (req, res, next) => {
 	try {
-		const queryData = Product.find();
-		const data = await queryData;
+		let filter = req.body.filter;
+
+		let queryData;
+
+		if (filter) {
+			queryData = Product.find({ ...filter });
+		} else {
+			queryData = Product.find();
+		}
+
+		const data = await queryData
+			.populate("brand")
+			.populate("category")
+			.populate("subCategory")
+			.select(
+				"productName images productSlug price discountAmount category brand sku quantity"
+			);
+
+		if (filter) {
+			dataCount = await Product.countDocuments(filter);
+		} else {
+			dataCount = await Product.countDocuments();
+		}
 
 		res.status(200).json({
 			data: data,
+			count: dataCount,
 		});
 	} catch (err) {
 		console.log(err);
@@ -123,7 +145,6 @@ exports.deleteProductById = async (req, res, next) => {
 	try {
 		const query = { _id: productId };
 		await Product.deleteOne(query);
-		// Review.deleteOne({ product: productId });
 
 		res.status(200).json({
 			message: "Product deleted successfully!",

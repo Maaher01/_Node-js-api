@@ -29,8 +29,9 @@ const productSchema = new Schema(
 			type: Number,
 			required: false,
 		},
-		brand: {
-			type: String,
+		quantity: {
+			type: Number,
+			default: 0,
 			required: false,
 		},
 		soldQuantity: {
@@ -38,16 +39,37 @@ const productSchema = new Schema(
 			default: 0,
 			required: false,
 		},
-		warrantyPolicy: {
-			type: String,
+		brand: {
+			type: Schema.Types.ObjectId,
+			ref: "ProductBrand",
 			required: false,
 		},
-		description: {
+		brandName: {
+			type: String,
+		},
+		category: {
+			type: Schema.Types.ObjectId,
+			ref: "ProductCategory",
+			required: true,
+		},
+		categoryName: {
+			type: String,
+		},
+		subCategory: {
+			type: Schema.Types.ObjectId,
+			ref: "ProductSubCategory",
+			required: true,
+		},
+		subCategoryName: {
+			type: String,
+		},
+		shortDescription: {
 			type: String,
 			required: false,
 		},
 	},
 	{
+		versionKey: false,
 		timestamps: true,
 	}
 );
