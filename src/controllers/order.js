@@ -7,6 +7,8 @@ const ObjectId = require("mongoose").Types.ObjectId;
 exports.addOrder = async (req, res, next) => {
 	const user = req.body.userId;
 	const orderData = req.body;
+
+	req.body.orderInfo.checkoutDate = new Date()
 	
 	const mData = { ...orderData };
 	const newOrder = new Order(mData);
