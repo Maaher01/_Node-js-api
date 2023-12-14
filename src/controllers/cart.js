@@ -6,7 +6,11 @@ exports.addToCart = async (req, res, next) => {
 	const userId = req.body.userId;
 	const productId = req.body.productId;
 
-	const newData = { cartProducts: [{ product: productId }], userId, totalQuantity: 1 };
+	const newData = {
+		cartProducts: [{ product: productId }],
+		userId,
+		totalQuantity: 1,
+	};
 	try {
 		const cartData = await Cart.findOne({ userId: userId });
 
@@ -23,7 +27,7 @@ exports.addToCart = async (req, res, next) => {
 					productQuantity: 1,
 				});
 
-				cartData.totalQuantity += 1
+				cartData.totalQuantity += 1;
 			}
 
 			await cartData.save();
@@ -69,6 +73,50 @@ exports.getUserCart = async (req, res, next) => {
 		res.status(200).json({
 			data: cartData,
 			message: "Successfully got cart info.",
+		});
+	} catch (err) {
+		console.log(err);
+		if (!err.statusCode) {
+			err.statusCode = 500;
+			err.message = "Something went wrong on database operation!";
+		}
+		next(err);
+	}
+};
+
+exports.removeFromCart = async (req, res, next) => {
+	const userId = req.body.userId;
+	const productId = req.body.productId;
+
+	try {
+		const cart = await Cart.findOne({ userId: userId });
+
+		const productIndex = cart.cartProducts.findIndex(
+			(item) => item.product.toString() === productId
+		);
+
+		if (productIndex !== -1) {
+			if (cart.cartProducts[productIndex].productQuantity > 1) {
+				cart.cartProducts[productIndex].productQuantity -= 1;
+				await cart.save();
+			} else if (cart.cartProducts[productIndex].productQuantity == 1) {
+				cart.cartProducts[productIndex].productQuantity == 0;
+				cart.deleteOne();
+
+				await User.findOneAndUpdate(
+					{ _id: userId },
+					{
+						$set: {
+							carts: [],
+						},
+					}
+				);
+			}
+		}
+
+		res.status(200).json({
+			data: cart,
+			message: "Successfully updated cart info.",
 		});
 	} catch (err) {
 		console.log(err);

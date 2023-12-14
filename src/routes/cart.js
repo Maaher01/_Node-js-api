@@ -12,6 +12,7 @@ const router = express.Router();
  */
 
 router.post("/add-to-cart", controller.addToCart);
+router.post("/remove-from-cart", controller.removeFromCart)
 router.get("/get-user-cart", controller.getUserCart);
 
 // Export all routes..

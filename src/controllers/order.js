@@ -2,14 +2,14 @@
 const Order = require("../models/order");
 const User = require("../models/user");
 const Cart = require("../models/cart");
-const ObjectId = require("mongoose").Types.ObjectId;
+const Product = require("../models/product")
 
 exports.addOrder = async (req, res, next) => {
 	const user = req.body.userId;
 	const orderData = req.body;
 
-	req.body.orderInfo.checkoutDate = new Date()
-	
+	req.body.orderInfo.checkoutDate = new Date();
+
 	const mData = { ...orderData };
 	const newOrder = new Order(mData);
 
@@ -17,16 +17,27 @@ exports.addOrder = async (req, res, next) => {
 		const saveOrder = await newOrder.save();
 
 		if (user) {
-			await Cart.deleteMany({ userId: new ObjectId(user) });
+			const cart = await Cart.findOne({ userId: user });
 
-			await User.findOneAndUpdate(
-				{ _id: user },
-				{
-					$set: {
-						carts: [],
-					},
+			for(const cartProduct of cart.cartProducts) {
+				const product = await Product.findById(cartProduct.product)
+
+				if(product) {
+					product.soldQuantity += cartProduct.productQuantity
+					product.quantity -= cartProduct.productQuantity
+
+					product.save()
 				}
-			);
+			}
+
+			await cart.delete();
+
+			const userCart = await User.findOne({ _id: user });
+			await userCart.updateOne({
+				$set: {
+					carts: [],
+				},
+			});
 		}
 
 		res.status(200).json({
