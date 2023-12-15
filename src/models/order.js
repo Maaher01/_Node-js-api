@@ -26,11 +26,6 @@ const orderSchema = new Schema(
 					type: Number,
 					required: true,
 				},
-				orderDiscount: {
-					type: Number,
-					required: true,
-					default: 401,
-				},
 				checkoutDate: {
 					type: Date,
 					required: false,

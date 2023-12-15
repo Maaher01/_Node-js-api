@@ -1,15 +1,19 @@
 // Require Schema from Models..
 const Cart = require("../models/cart");
 const User = require("../models/user");
+const Product = require("../models/product");
 
 exports.addToCart = async (req, res, next) => {
 	const userId = req.body.userId;
 	const productId = req.body.productId;
 
+	const product = await Product.findById(productId);
+
 	const newData = {
-		cartProducts: [{ product: productId }],
+		cartProducts: [{ product: product._id, totalProductPrice: product.price }],
 		userId,
 		totalQuantity: 1,
+		grandTotal: product.price,
 	};
 	try {
 		const cartData = await Cart.findOne({ userId: userId });
@@ -20,14 +24,20 @@ exports.addToCart = async (req, res, next) => {
 			);
 
 			if (productExistIndex !== -1) {
-				cartData.cartProducts[productExistIndex].productQuantity += 1;
+				const currentProduct = cartData.cartProducts[productExistIndex];
+
+				currentProduct.productQuantity += 1;
+				currentProduct.totalProductPrice += product.price;
+				cartData.grandTotal += product.price;
 			} else {
 				cartData.cartProducts.push({
-					product: productId,
+					product: product._id,
 					productQuantity: 1,
+					totalProductPrice: product.price,
 				});
 
 				cartData.totalQuantity += 1;
+				cartData.grandTotal += product.price;
 			}
 
 			await cartData.save();
@@ -65,7 +75,7 @@ exports.getUserCart = async (req, res, next) => {
 	try {
 		const fData = await Cart.find({ userId: userId }).populate(
 			"cartProducts.product",
-			"productName images price"
+			"productName images price discountAmount"
 		);
 
 		const cartData = JSON.parse(JSON.stringify(fData));
@@ -88,6 +98,8 @@ exports.removeFromCart = async (req, res, next) => {
 	const userId = req.body.userId;
 	const productId = req.body.productId;
 
+	const product = await Product.findById(productId);
+
 	try {
 		const cart = await Cart.findOne({ userId: userId });
 
@@ -95,12 +107,27 @@ exports.removeFromCart = async (req, res, next) => {
 			(item) => item.product.toString() === productId
 		);
 
-		if (productIndex !== -1) {
-			if (cart.cartProducts[productIndex].productQuantity > 1) {
-				cart.cartProducts[productIndex].productQuantity -= 1;
+		const currentProduct = cart.cartProducts[productIndex];
+
+		if (cart.totalQuantity > 1) {
+			if (currentProduct.productQuantity > 1) {
+				currentProduct.productQuantity -= 1;
+				currentProduct.totalProductPrice -= product.price;
+				cart.grandTotal -= product.price;
 				await cart.save();
-			} else if (cart.cartProducts[productIndex].productQuantity == 1) {
-				cart.cartProducts[productIndex].productQuantity == 0;
+			} else if (currentProduct.productQuantity == 1) {
+				cart.grandTotal -= product.price;
+				cart.cartProducts.splice(productIndex, 1);
+				cart.totalQuantity -= 1;
+				await cart.save();
+			}
+		} else {
+			if (currentProduct.productQuantity > 1) {
+				currentProduct.productQuantity -= 1;
+				currentProduct.totalProductPrice -= product.price;
+				cart.grandTotal -= product.price;
+				await cart.save();
+			} else if (currentProduct.productQuantity == 1) {
 				cart.deleteOne();
 
 				await User.findOneAndUpdate(
