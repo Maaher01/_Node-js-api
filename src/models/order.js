@@ -3,6 +3,11 @@ const Schema = mongoose.Schema;
 
 const orderSchema = new Schema(
 	{
+		orderId: {
+			type: String,
+			required: false,
+			unique: true,
+		},
 		orderInfo: [
 			{
 				name: {
@@ -18,7 +23,7 @@ const orderSchema = new Schema(
 					type: String,
 					required: true,
 				},
-				paymentMethod: {
+				paymentType: {
 					type: String,
 					required: true,
 				},
@@ -26,29 +31,50 @@ const orderSchema = new Schema(
 					type: Number,
 					required: true,
 				},
-				checkoutDate: {
-					type: Date,
-					required: false,
-				},
-				orderStatus: {
-					type: Number,
-					required: true,
-					default: 1,
-				},
 				note: {
 					type: String,
 					required: false,
 				},
 			},
 		],
-		userId: {
-			type: Schema.Types.ObjectId,
-			ref: "User",
+		paymentStatus: {
+			type: String,
+			required: true,
+			default: "Unpaid",
+		},
+		orderedItems: [
+			{
+				product: {
+					type: Schema.Types.ObjectId,
+					ref: "Product",
+					required: true,
+				},
+				productQuantity: {
+					type: Number,
+					default: 1,
+				},
+			},
+		],
+		subTotal: {
+			type: Number,
 			required: true,
 		},
-		orderCart: {
+		grandTotal: {
+			type: Number,
+			required: true,
+		},
+		checkoutDate: {
+			type: Date,
+			required: false,
+		},
+		orderStatus: {
+			type: String,
+			required: true,
+			default: 1,
+		},
+		user: {
 			type: Schema.Types.ObjectId,
-			ref: "Cart",
+			ref: "User",
 			required: true,
 		},
 	},

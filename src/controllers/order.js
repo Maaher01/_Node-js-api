@@ -2,31 +2,36 @@
 const Order = require("../models/order");
 const User = require("../models/user");
 const Cart = require("../models/cart");
-const Product = require("../models/product")
+const Product = require("../models/product");
 
 exports.addOrder = async (req, res, next) => {
-	const user = req.body.userId;
+	const user = req.body.user;
 	const orderData = req.body;
 
-	req.body.orderInfo.checkoutDate = new Date();
-
-	const mData = { ...orderData };
-	const newOrder = new Order(mData);
+	orderData.checkoutDate = new Date();
 
 	try {
-		const saveOrder = await newOrder.save();
-
 		if (user) {
 			const cart = await Cart.findOne({ userId: user });
 
-			for(const cartProduct of cart.cartProducts) {
-				const product = await Product.findById(cartProduct.product)
+			orderData.subTotal = cart.grandTotal;
 
-				if(product) {
-					product.soldQuantity += cartProduct.productQuantity
-					product.quantity -= cartProduct.productQuantity
+			orderData.grandTotal =
+				Number(cart.grandTotal) + Number(orderData.orderInfo.deliveryCharge);
 
-					product.save()
+			orderData.orderedItems = cart.cartProducts.map((cartProduct) => ({
+				product: cartProduct.product,
+				productQuantity: cartProduct.productQuantity,
+			}));
+
+			for (const cartProduct of cart.cartProducts) {
+				const product = await Product.findById(cartProduct.product);
+
+				if (product) {
+					product.soldQuantity += cartProduct.productQuantity;
+					product.quantity -= cartProduct.productQuantity;
+
+					product.save();
 				}
 			}
 
@@ -39,6 +44,9 @@ exports.addOrder = async (req, res, next) => {
 				},
 			});
 		}
+		const data = { ...orderData };
+		const newOrder = new Order(data);
+		const saveOrder = await newOrder.save();
 
 		res.status(200).json({
 			data: saveOrder,
@@ -58,7 +66,7 @@ exports.getUserOrders = async (req, res, next) => {
 	const userId = req.body.userId;
 
 	try {
-		const orders = await Order.find({ userId: userId });
+		const orders = await Order.find({ user: userId });
 
 		const orderData = JSON.parse(JSON.stringify(orders));
 
@@ -80,7 +88,10 @@ exports.getOrderById = async (req, res, next) => {
 	const orderId = req.params.id;
 
 	try {
-		const orderData = await Order.findById(orderId);
+		const orderData = await Order.findById(orderId).populate(
+			"orderedItems.product",
+			"productName images categoryName subCategoryName brandName price"
+		);
 
 		res.status(200).json({
 			data: orderData,
