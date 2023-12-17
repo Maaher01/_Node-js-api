@@ -13,6 +13,8 @@ const router = express.Router();
 
 router.post("/add-to-cart", controller.addToCart);
 router.post("/remove-from-cart", controller.removeFromCart)
+router.post("/increase-product-quantity", controller.increaseProductQuantity)
+router.post("/decrease-product-quantity", controller.decreaseProductQuantity)
 router.get("/get-user-cart", controller.getUserCart);
 
 // Export all routes..
