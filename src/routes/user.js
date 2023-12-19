@@ -17,7 +17,7 @@ router.post(
 	inputValidator.checkUserRegInput,
 	controller.userRegistration
 );
-router.put("/login", controller.userLogin);
+router.post("/login", controller.userLogin);
 router.patch("/forgot-password", controller.forgotUserPassword);
 router.delete("/delete-user-by-id/:id", controller.deleteUserById);
 router.put("/edit-user-by-id/:id", controller.updateUserById);
