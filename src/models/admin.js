@@ -30,6 +30,7 @@ const adminSchema = new Schema({
 		type: Boolean,
 		required: true,
 	},
+	refreshToken: String,
 });
 
 module.exports = mongoose.model("Admin", adminSchema);

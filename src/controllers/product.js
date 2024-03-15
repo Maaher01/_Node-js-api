@@ -23,7 +23,6 @@ exports.addSingleProduct = async (req, res, next) => {
 			});
 		}
 	} catch (err) {
-		console.log(err);
 		if (!err.statusCode) {
 			err.statusCode = 500;
 			err.message = "Something went wrong in the database operation!";
@@ -63,7 +62,6 @@ exports.getAllProducts = async (req, res, next) => {
 			count: dataCount,
 		});
 	} catch (err) {
-		console.log(err);
 		if (!err.statusCode) {
 			err.statusCode = 500;
 			err.message = "Something went wrong in the database operation!";
@@ -116,7 +114,6 @@ exports.updateProductById = async (req, res, next) => {
 			message: "Product updated successfully!",
 		});
 	} catch (err) {
-		console.log(err);
 		if (!err.statusCode) {
 			err.statusCode = 500;
 			err.message = "Something went wrong in the database operation!";

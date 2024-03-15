@@ -11,11 +11,11 @@ module.exports = (req, res, next) => {
 	const token = authHeader.split(" ")[1];
 	let decodedToken;
 	try {
-		decodedToken = jwt.verify(token, process.env.JWT_PRIVATE_KEY_ADMIN);
+		decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET_ADMIN);
 		req.adminData = {
-			username: decodedToken.username,
-			email: decodedToken.email,
-			userId: decodedToken.userId,
+			username: decodedToken.AdminInfo.username,
+			email: decodedToken.AdminInfo.email,
+			userId: decodedToken.AdminInfo.userId,
 		};
 	} catch (err) {
 		err.statusCode = 500;

@@ -53,7 +53,6 @@ exports.addOrder = async (req, res, next) => {
 			message: "Order placed successfully.",
 		});
 	} catch (err) {
-		console.log(err);
 		if (!err.statusCode) {
 			err.statusCode = 500;
 			err.message = "Something went wrong on database operation!";
@@ -75,7 +74,6 @@ exports.getUserOrders = async (req, res, next) => {
 			message: "Orders fetched successfully",
 		});
 	} catch (err) {
-		console.log(err);
 		if (!err.statusCode) {
 			err.statusCode = 500;
 			err.message = "Something went wrong in the database operation";
@@ -98,7 +96,6 @@ exports.getOrderById = async (req, res, next) => {
 			message: "Order fetched successfully",
 		});
 	} catch (err) {
-		console.log(err);
 		if (!err.statusCode) {
 			err.statusCode = 500;
 			err.message = "Something went wrong in the database operation";

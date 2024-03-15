@@ -4,12 +4,16 @@
  */
 const express = require("express");
 require("dotenv").config();
-const databaseConnection = require("./config/config");
+const cookieParser = require("cookie-parser");
+const databaseConnection = require("./config/dbConnection");
 
 // Cors Files..
 const cors = require("cors");
 const errorHandler = require("./middleware/error-handler");
 const corsOptions = require("./middleware/check-ip-whitelist");
+
+// Logger
+const { logger } = require("./middleware/logEvents");
 
 /**
  *  Router File Import
@@ -33,6 +37,8 @@ const port = process.env.PORT || 3000;
 //Middlewares
 app.use(express.json());
 app.use(cors(corsOptions));
+app.use(cookieParser());
+app.use(logger);
 
 /**
  * MAIN BASE ROUTER WITH IMPORTED ROUTES

@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 // Require Schema from Models..
 const Admin = require("../models/admin");
+const user = require("../models/user");
 
 exports.adminSignUp = async (req, res, next) => {
 	const errors = validationResult(req);
@@ -55,7 +56,6 @@ exports.adminSignUp = async (req, res, next) => {
 			}
 		}
 	} catch (err) {
-		console.log(err);
 		if (!err.statusCode) {
 			err.statusCode = 500;
 			err.message = "Something went wrong on database operation!";
@@ -68,20 +68,17 @@ exports.adminLogin = async (req, res, next) => {
 	const username = req.body.username;
 	const password = req.body.password;
 
+	if (!username || !password) {
+		res.status(400).json({
+			message: "Username and password are required",
+		});
+	}
+
 	let loadedAdmin;
-	let token;
 
 	try {
-		const query = {
-			//  $or: [
-			//     {
-			username: username,
-			//     },
-			//     {
-			//       email: credential,
-			//     },
-			//   ],
-		};
+		const query = { username: username };
+
 		const admin = await Admin.findOne(query);
 		if (!admin) {
 			const error = new Error(
@@ -105,21 +102,45 @@ exports.adminLogin = async (req, res, next) => {
 				next(error);
 			} else {
 				// For Json Token Generation
-				token = jwt.sign(
+				const accessToken = jwt.sign(
+					{
+						AdminInfo: {
+							username: loadedAdmin.username,
+							email: loadedAdmin.email,
+							userId: loadedAdmin._id,
+						},
+					},
+					process.env.ACCESS_TOKEN_SECRET_ADMIN,
+					{
+						expiresIn: "10s",
+					}
+				);
+				const refreshToken = jwt.sign(
 					{
 						username: loadedAdmin.username,
 						email: loadedAdmin.email,
 						userId: loadedAdmin._id,
 					},
-					process.env.JWT_PRIVATE_KEY_ADMIN,
+					process.env.REFRESH_TOKEN_SECRET_ADMIN,
 					{
-						expiresIn: "24h",
+						expiresIn: "1d",
 					}
 				);
+				// Saving refreshToken with current user
+				loadedAdmin.refreshToken = refreshToken;
+				const result = await loadedAdmin.save();
+
+				// Creates Secure Cookie with refresh token
+				res.cookie("jwt", refreshToken, {
+					httpOnly: true,
+					secure: true,
+					sameSite: "None",
+					maxAge: 24 * 60 * 60 * 1000,
+				});
 
 				res.status(200).json({
-					token: token,
-					expiredIn: 86400,
+					token: accessToken,
+					role: loadedAdmin.role,
 				});
 			}
 		}
@@ -128,14 +149,70 @@ exports.adminLogin = async (req, res, next) => {
 			err.statusCode = 500;
 			err.message = "Something went wrong on database operation!";
 		}
-		console.log(err);
 		next(err);
 	}
+};
+
+exports.adminLogout = async (req, res) => {
+	const cookies = req.cookies;
+	if (!cookies?.jwt) return res.sendStatus(204);
+	const refreshToken = cookies.jwt;
+
+	const foundAdmin = await Admin.findOne({ refreshToken }).exec();
+
+	if (!foundAdmin) {
+		res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+		return res.sendStatus(204);
+	}
+
+	//Delete admin's refresh token
+	foundAdmin.refreshToken = "";
+	const result = await foundAdmin.save();
+
+	res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+	res.sendStatus(204);
+};
+
+exports.adminRefreshToken = async (req, res) => {
+	const cookies = req.cookies;
+	if (!cookies?.jwt) return res.sendStatus(401);
+	const refreshToken = cookies.jwt;
+
+	const foundAdmin = await Admin.findOne({ refreshToken }).exec();
+	if (!foundAdmin) return res.status(403);
+
+	//Evaluate jwt
+	jwt.verify(
+		refreshToken,
+		process.env.REFRESH_TOKEN_SECRET_ADMIN,
+		(err, decoded) => {
+			if (err || foundAdmin.username !== decoded.username)
+				return res.sendStatus(403);
+			const accessToken = jwt.sign(
+				{
+					AdminInfo: {
+						username: foundAdmin.username,
+						email: foundAdmin.email,
+						userId: foundAdmin._id,
+					},
+				},
+				process.env.ACCESS_TOKEN_SECRET_USER,
+				{
+					expiresIn: "10s",
+				}
+			);
+
+			res.status(200).json({
+				token: accessToken,
+			});
+		}
+	);
 };
 
 exports.getLoginAdminInfo = async (req, res, next) => {
 	try {
 		const loginUserId = req.adminData.userId;
+
 		const result = await Admin.findOne({ _id: loginUserId }).select(
 			"-password"
 		);
@@ -228,7 +305,6 @@ exports.updateAdminById = async (req, res, next) => {
 			message: "Admin updated successfully!",
 		});
 	} catch (err) {
-		console.log(err);
 		if (!err.statusCode) {
 			err.statusCode = 500;
 			err.message = "Something went wrong in the database operation!";

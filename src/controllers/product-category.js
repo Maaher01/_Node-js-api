@@ -24,7 +24,6 @@ exports.addCategory = async (req, res, next) => {
 			});
 		}
 	} catch (err) {
-		console.log(err);
 		if (!err.statusCode) {
 			(err.statusCode = 500),
 				(err.message = "Something went wrong in the database operation!");
@@ -43,7 +42,6 @@ exports.getAllCategory = async (req, res, next) => {
 			data: data,
 		});
 	} catch {
-		console.log(err);
 		if (!err.statusCode) {
 			(err.statusCode = 500),
 				(err.message = "Something went wrong in the database operation!");

@@ -10,11 +10,11 @@ module.exports = (req, res, next) => {
 	const token = authHeader.split(" ")[1];
 	let decodedToken;
 	try {
-		decodedToken = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
+		decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET_USER);
 		req.userData = {
-			phoneNo: decodedToken.phoneNo,
-			email: decodedToken.email,
-			userId: decodedToken.userId,
+			phoneNo: decodedToken.UserInfo.phoneNo,
+			email: decodedToken.UserInfo.email,
+			userId: decodedToken.UserInfo.userId,
 		};
 		next();
 	} catch (err) {

@@ -56,13 +56,18 @@ exports.userRegistration = async (req, res, next) => {
 		});
 };
 
-exports.userLogin = (req, res, next) => {
+exports.userLogin = async (req, res, next) => {
 	const email = req.body.email;
 	const password = req.body.password;
 
+	if (!email || !password) {
+		res.status(400).json({
+			message: "Email and password are required",
+		});
+	}
+
 	let filter;
 	let loadedUser;
-	let token;
 
 	filter = { email: email };
 
@@ -78,7 +83,7 @@ exports.userLogin = (req, res, next) => {
 			loadedUser = user;
 			return bcrypt.compareSync(password, user.password);
 		})
-		.then((isEqual) => {
+		.then(async (isEqual) => {
 			if (!isEqual) {
 				const error = new Error("You entered a wrong password!");
 				error.statusCode = 401;
@@ -86,28 +91,105 @@ exports.userLogin = (req, res, next) => {
 				return;
 			}
 			// For Json Token Generation..
-			token = jwt.sign(
+			const accessToken = jwt.sign(
+				{
+					UserInfo: {
+						email: loadedUser.email,
+						userId: loadedUser._id,
+					},
+				},
+				process.env.ACCESS_TOKEN_SECRET_USER,
+				{
+					expiresIn: "10s",
+				}
+			);
+			const refreshToken = jwt.sign(
 				{
 					email: loadedUser.email,
 					userId: loadedUser._id,
 				},
-				process.env.JWT_PRIVATE_KEY,
+				process.env.REFRESH_TOKEN_SECRET_USER,
 				{
-					expiresIn: "24h",
+					expiresIn: "1d",
 				}
 			);
+			// Saving refreshToken with current user
+			loadedUser.refreshToken = refreshToken;
+			const result = await loadedUser.save();
+
+			// Creates Secure Cookie with refresh token
+			res.cookie("jwt", refreshToken, {
+				httpOnly: true,
+				secure: true,
+				sameSite: "None",
+				maxAge: 24 * 60 * 60 * 1000,
+			});
 
 			res.status(200).json({
-				token: token,
-				expiredIn: 86400,
+				token: accessToken,
 			});
 		})
 		.catch((err) => {
 			if (!err.statusCode) {
 				err.statusCode = 500;
+				err.message = "Something went wrong on database operation!";
 			}
 			next(err);
 		});
+};
+
+exports.userLogout = async (req, res) => {
+	const cookies = req.cookies;
+	if (!cookies?.jwt) return res.sendStatus(204);
+	const refreshToken = cookies.jwt;
+
+	const foundUser = await User.findOne({ refreshToken }).exec();
+
+	if (!foundUser) {
+		res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+		return res.sendStatus(204);
+	}
+
+	//Delete user's refresh token
+	foundUser.refreshToken = "";
+	const result = await foundUser.save();
+
+	res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+	res.sendStatus(204);
+};
+
+exports.userRefreshToken = async (req, res) => {
+	const cookies = req.cookies;
+	if (!cookies?.jwt) return res.sendStatus(401);
+	const refreshToken = cookies.jwt;
+
+	const foundUser = await User.findOne({ refreshToken }).exec();
+	if (!foundUser) return res.status(403);
+
+	//Evaluate jwt
+	jwt.verify(
+		refreshToken,
+		process.env.REFRESH_TOKEN_SECRET_USER,
+		(err, decoded) => {
+			if (err || foundUser.email !== decoded.email) return res.sendStatus(403);
+			const accessToken = jwt.sign(
+				{
+					UserInfo: {
+						email: foundUser.email,
+						userId: foundUser._id,
+					},
+				},
+				process.env.ACCESS_TOKEN_SECRET_USER,
+				{
+					expiresIn: "10s",
+				}
+			);
+
+			res.status(200).json({
+				token: accessToken,
+			});
+		}
+	);
 };
 
 exports.forgotUserPassword = async (req, res, next) => {
@@ -199,7 +281,6 @@ exports.updateUserById = async (req, res, next) => {
 			message: "User updated successfully!",
 		});
 	} catch (err) {
-		console.log(err);
 		if (!err.statusCode) {
 			err.statusCode = 500;
 			err.message = "Something went wrong in the database operation!";

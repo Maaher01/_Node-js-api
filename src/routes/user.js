@@ -18,6 +18,8 @@ router.post(
 	controller.userRegistration
 );
 router.post("/login", controller.userLogin);
+router.get("/logout", controller.userLogout);
+router.get("/refreshToken", controller.userRefreshToken);
 router.patch("/forgot-password", controller.forgotUserPassword);
 router.delete("/delete-user-by-id/:id", controller.deleteUserById);
 router.put("/edit-user-by-id/:id", controller.updateUserById);

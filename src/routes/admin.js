@@ -19,6 +19,8 @@ router.post(
 	controller.adminSignUp
 );
 router.put("/login", controller.adminLogin);
+router.get("/logout", controller.adminLogout);
+router.get("/refreshToken", controller.adminRefreshToken);
 router.get(
 	"/get-logged-in-admin-info",
 	checkAdminAuth,

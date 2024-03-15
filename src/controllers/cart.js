@@ -24,15 +24,15 @@ exports.addToCart = async (req, res, next) => {
 			);
 
 			if (productExistIndex == -1) {
-			cartData.cartProducts.push({
-				product: product._id,
-				productQuantity: 1,
-				totalProductPrice: product.price,
-			});
+				cartData.cartProducts.push({
+					product: product._id,
+					productQuantity: 1,
+					totalProductPrice: product.price,
+				});
 
-			cartData.totalQuantity += 1;
-			cartData.grandTotal += product.price;
-		}
+				cartData.totalQuantity += 1;
+				cartData.grandTotal += product.price;
+			}
 
 			await cartData.save();
 
@@ -54,7 +54,6 @@ exports.addToCart = async (req, res, next) => {
 			});
 		}
 	} catch (err) {
-		console.log(err);
 		if (!err.statusCode) {
 			err.statusCode = 500;
 			err.message = "Something went wrong on database operation!";
@@ -88,7 +87,6 @@ exports.increaseProductQuantity = async (req, res, next) => {
 			message: "Successfully updated cart info.",
 		});
 	} catch (err) {
-		console.log(err);
 		if (!err.statusCode) {
 			err.statusCode = 500;
 			err.message = "Something went wrong on database operation!";
@@ -122,7 +120,6 @@ exports.decreaseProductQuantity = async (req, res, next) => {
 			message: "Successfully updated cart info.",
 		});
 	} catch (err) {
-		console.log(err);
 		if (!err.statusCode) {
 			err.statusCode = 500;
 			err.message = "Something went wrong on database operation!";
@@ -169,7 +166,6 @@ exports.removeFromCart = async (req, res, next) => {
 			message: "Successfully updated cart info.",
 		});
 	} catch (err) {
-		console.log(err);
 		if (!err.statusCode) {
 			err.statusCode = 500;
 			err.message = "Something went wrong on database operation!";
@@ -194,7 +190,6 @@ exports.getUserCart = async (req, res, next) => {
 			message: "Successfully got cart info.",
 		});
 	} catch (err) {
-		console.log(err);
 		if (!err.statusCode) {
 			err.statusCode = 500;
 			err.message = "Something went wrong on database operation!";
