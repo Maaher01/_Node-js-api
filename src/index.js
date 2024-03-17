@@ -10,7 +10,7 @@ const databaseConnection = require("./config/dbConnection");
 // Cors Files..
 const cors = require("cors");
 const errorHandler = require("./middleware/error-handler");
-const corsOptions = require("./middleware/check-ip-whitelist");
+const corsOptions = require("./config/corsOptions");
 
 // Logger
 const { logger } = require("./middleware/logEvents");
