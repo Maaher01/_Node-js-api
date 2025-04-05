@@ -112,7 +112,7 @@ exports.adminLogin = async (req, res, next) => {
 					},
 					process.env.ACCESS_TOKEN_SECRET_ADMIN,
 					{
-						expiresIn: "10s",
+						expiresIn: "15m",
 					}
 				);
 				const refreshToken = jwt.sign(
@@ -198,7 +198,7 @@ exports.adminRefreshToken = async (req, res) => {
 				},
 				process.env.ACCESS_TOKEN_SECRET_USER,
 				{
-					expiresIn: "10s",
+					expiresIn: "15m",
 				}
 			);
 
